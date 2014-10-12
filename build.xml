@@ -22,7 +22,7 @@
 	</target>
 
 	<target name="create_run_jar" depends="compile">
-		<jar destfile="./nico.jar" filesetmanifest="mergewithoutmain">
+		<jar destfile="./maki.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="akb428.tkws.SearchMain"/>
 				<attribute name="Class-Path" value="."/>
