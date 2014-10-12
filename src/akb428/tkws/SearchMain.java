@@ -72,7 +72,12 @@ class MyStatusAdapter extends StatusAdapter {
 
 	public void onStatus(Status status) {
 		System.out.println("@" + status.getUser().getScreenName());
+		System.out.println(status.getId());
 		System.out.println(status.getText());
+		System.out.println(status.getSource());
+		System.out.println(status.getRetweetCount());
+		System.out.println(status.getFavoriteCount());
+		
 		MediaEntity[] arrMedia = status.getMediaEntities();
 
 		if (arrMedia.length > 0 ) {
