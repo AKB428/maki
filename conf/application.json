@@ -1,5 +1,8 @@
 {
 	"database" : "H2",
+	"Media" : {
+		"execute" : false
+	},
 	"HBase" : {
 		"execute" : true,
 		"resource" :[
