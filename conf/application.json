@@ -1,13 +1,13 @@
 {
-	database : "H2"
-	HBase : {
-		execute : true,
-		resource :[
+	"database" : "H2",
+	"HBase" : {
+		"execute" : true,
+		"resource" :[
 			"/usr/local/Cellar/hbase/0.98.6.1/libexec/conf/hbase-policy.xml",
 			"/usr/local/Cellar/hbase/0.98.6.1/libexec/conf/hbase-site.xml"
 		]
-	}
-	log : {
-		execute : false
+	},
+	"log" : {
+		"execute" : false
 	}
 }
