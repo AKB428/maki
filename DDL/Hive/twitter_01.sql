@@ -1,0 +1,1 @@
+ create table twitter_hive_01 (id BIGINT, Text String ,ScreenName String ,Source String,RetweetCount int, FavoriteCount int);
