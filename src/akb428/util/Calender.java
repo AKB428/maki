@@ -14,4 +14,16 @@ public class Calender {
         dateString += String.valueOf( cal.get(Calendar.SECOND)) + "秒";
         return dateString;
 	}
+	
+	public static String yyyymmddhhmmss() {
+        String dateString = "";
+        Calendar cal = Calendar.getInstance();
+        dateString += String.valueOf( cal.get(Calendar.YEAR)) ;
+        dateString += String.valueOf( cal.get(Calendar.MONTH) + 1);
+        dateString += String.valueOf( cal.get(Calendar.DATE)) + "_";
+        dateString += String.valueOf( cal.get(Calendar.HOUR_OF_DAY));
+        dateString += String.valueOf( cal.get(Calendar.MINUTE));
+        dateString += String.valueOf( cal.get(Calendar.SECOND));
+        return dateString;
+	}
 }

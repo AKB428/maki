@@ -4,7 +4,7 @@
 		"execute" : false
 	},
 	"HBase" : {
-		"execute" : true,
+		"execute" : false,
 		"resource" :[
 			"/usr/local/Cellar/hbase/0.98.6.1/libexec/conf/hbase-policy.xml",
 			"/usr/local/Cellar/hbase/0.98.6.1/libexec/conf/hbase-site.xml"
