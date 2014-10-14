@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.HTable;
@@ -42,7 +43,7 @@ public class SearchMain {
 		MediaConfModel mediaConfModel;
 
 		// 追記モード
-		File csv = new File("logs/" +  Calender.yyyymmddhhmmss() +".csv"); // CSVデータファイル
+		File csv = new File("logs/" +  Calender.yyyymmdd_hhmmss() +".csv"); // CSVデータファイル
 	    BufferedWriter bufferedWriter 
 	        = new BufferedWriter(new FileWriter(csv, false)); 
 		
@@ -148,15 +149,25 @@ class MyStatusAdapter extends StatusAdapter {
 	
 	public void writTwitterStreamToCSV(Status status) {
 	      try {
+				bufferedWriter.write(status.getId() 
+						+ "," + StringEscapeUtils.escapeCsv(status.getUser().getScreenName())
+						+ ","  + StringEscapeUtils.escapeCsv(status.getText())
+						+ ","  + StringEscapeUtils.escapeCsv(status.getSource())
+						+ ","  + status.getRetweetCount()
+						+ ","  + status.getFavoriteCount()
+						+ ","  + status.getCreatedAt()
+						+ "," 
+						);
+	    	  /*
 			bufferedWriter.write("\"" +status.getId() 
-					+ "\",\"" + status.getUser().getScreenName() 
-					+ "\",\"" + status.getText()
-					+ "\",\"" + status.getSource() 
-					+ "\",\"" + status.getRetweetCount() 
-					+ "\",\"" + status.getFavoriteCount() 
+					+ "\",\"" + StringEscapeUtils.escapeCsv(status.getUser().getScreenName())
+					+ "\",\"" + StringEscapeUtils.escapeCsv(status.getText())
+					+ "\",\"" + StringEscapeUtils.escapeCsv(status.getSource())
+					+ "\",\"" + status.getRetweetCount()
+					+ "\",\"" + status.getFavoriteCount()
 					+ "\",\"" + status.getCreatedAt()
 					+ "\""
-					);
+					);*/
 		    bufferedWriter.newLine();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
