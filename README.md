@@ -31,16 +31,12 @@ Twitter設定ファイルを指定する
 
 	java -jar maki.jar "ラブライブ,スクフェス,lovelive" "private/twitter_conf.json"
 
-Java7で起動
-
-	java -jar maki_jvm7.jar "艦これ"
-
 
 ##コンパイル方法
 
 コードは全部Javaで書かれています。
 
-Eclipseでプロジェクト指定するかantでコンパイルしてください。(注:build.xmlおよびJVM7用のjarはあまりメンテしていません)
+Eclipseでプロジェクト指定するかantでコンパイルしてください。(バイナリjarはjava8用)
 
 
 ##実行環境
