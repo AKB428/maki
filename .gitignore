@@ -16,6 +16,7 @@ bin/*
 
 private/*
 /bin/
+/logs/*
 media/*
 database/twitterKeyWordSearch.*
 metastore_db
