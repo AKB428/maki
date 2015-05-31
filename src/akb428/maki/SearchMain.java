@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,7 @@ import twitter4j.StatusAdapter;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
+import akb428.maki.config.Application;
 import akb428.maki.dao.IMediaUrlDao;
 import akb428.maki.dao.h2.MediaUrlDao;
 import akb428.maki.model.HbaseConfModel;
@@ -36,11 +38,12 @@ import akb428.util.Calender;
 public class SearchMain {
 
 	public static void main(String[] args) throws ClassNotFoundException,
-			JsonParseException, JsonMappingException, IOException {
+			JsonParseException, JsonMappingException, IOException, SQLException {
 
 		TwitterModel twitterModel = null;
 		HbaseConfModel hbaseConfModel;
 		MediaConfModel mediaConfModel;
+		Application application = null;
 
 		// 追記モード
 		File csv = new File("logs/" +  Calender.yyyymmdd_hhmmss() +".csv"); // CSVデータファイル
@@ -62,6 +65,8 @@ public class SearchMain {
 		} else {
 			try {
 				twitterModel = TwitterConfParser.readConf(args[1]);
+				application = new Application(args[0]);
+				
 			} catch (IOException e) {
 				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
@@ -90,7 +95,7 @@ public class SearchMain {
 		twitterStream.addListener(new MyStatusAdapter(applicationConfParser,
 				conf, bufferedWriter));
 		ArrayList<String> track = new ArrayList<String>();
-		track.addAll(Arrays.asList(args[0].split(",")));
+		track.addAll(Arrays.asList(Application.searchTargetId.split(",")));
 
 		String[] trackArray = track.toArray(new String[track.size()]);
 
