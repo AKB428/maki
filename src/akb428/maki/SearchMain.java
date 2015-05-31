@@ -95,7 +95,7 @@ public class SearchMain {
 		twitterStream.addListener(new MyStatusAdapter(applicationConfParser,
 				conf, bufferedWriter));
 		ArrayList<String> track = new ArrayList<String>();
-		track.addAll(Arrays.asList(Application.searchTargetId.split(",")));
+		track.addAll(Arrays.asList(Application.searchKeyword.split(",")));
 
 		String[] trackArray = track.toArray(new String[track.size()]);
 

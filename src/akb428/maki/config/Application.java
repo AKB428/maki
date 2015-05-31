@@ -11,7 +11,7 @@ import java.util.Properties;
 public class Application {
 
 	public static Properties properties = null;
-	public static String searchTargetId = null;
+	public static String searchKeyword = null;
 
 	public static String configFilename = "./config/application.properties";
 
@@ -22,7 +22,7 @@ public class Application {
 		properties = new Properties();
 		properties.load(new InputStreamReader(inStream, "UTF-8"));
 
-		searchTargetId = Application.properties.getProperty("twitter.searchTargetId");
+		searchKeyword = Application.properties.getProperty("twitter.searchKeyword");
 	}
 
 }
