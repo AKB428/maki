@@ -13,11 +13,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 
@@ -75,18 +70,18 @@ public class SearchMain {
 			}
 		}
 
-		Configuration conf = HBaseConfiguration.create();
+		//Configuration conf = HBaseConfiguration.create();
 		ApplicationConfParser applicationConfParser = new ApplicationConfParser(
 				"./conf/application.json");
 		hbaseConfModel = applicationConfParser.getHbaseConfModel();
 		mediaConfModel = applicationConfParser.getMediaConfModel();
-
+/*
 		if (hbaseConfModel.isExecute()) {
 			List<String> resources = hbaseConfModel.getResource();
 			for (String resource : resources) {
 				conf.addResource(resource);
 			}
-		}
+		}*/
 
 		TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 		twitterStream.setOAuthConsumer(twitterModel.getConsumerKey(),
@@ -94,8 +89,7 @@ public class SearchMain {
 		twitterStream.setOAuthAccessToken(new AccessToken(twitterModel
 				.getAccessToken(), twitterModel.getAccessToken_secret()));
 
-		twitterStream.addListener(new MyStatusAdapter(applicationConfParser,
-				conf, bufferedWriter));
+		twitterStream.addListener(new MyStatusAdapter(applicationConfParser, bufferedWriter));
 		ArrayList<String> track = new ArrayList<String>();
 		track.addAll(Arrays.asList(Application.searchKeyword.split(",")));
 
@@ -118,27 +112,26 @@ class MyStatusAdapter extends StatusAdapter {
 
 	HbaseConfModel hbaseConfModel;
 	MediaConfModel mediaConfModel;
-	Configuration hbaseConf;
+	//Configuration hbaseConf;
 	BufferedWriter bufferedWriter;
 
-	public MyStatusAdapter(ApplicationConfParser applicationConfParser,
-			Configuration conf, BufferedWriter bufferedWriter) {
-		hbaseConfModel = applicationConfParser.getHbaseConfModel();
+	public MyStatusAdapter(ApplicationConfParser applicationConfParser, BufferedWriter bufferedWriter) {
+		//hbaseConfModel = applicationConfParser.getHbaseConfModel();
 		mediaConfModel = applicationConfParser.getMediaConfModel();
-		hbaseConf = conf;
 		this.bufferedWriter = bufferedWriter;
 	}
 
 	public void onStatus(Status status) {
-		/*
+	
 		System.out.println("@" + status.getUser().getScreenName());
 		System.out.println(status.getId());
 		System.out.println(status.getText());
 		System.out.println(status.getSource());
 		System.out.println(status.getRetweetCount());
 		System.out.println(status.getFavoriteCount());
-		System.out.println(status.getCreatedAt());*/
-		System.out.println(status.getId());
+		System.out.println(status.getCreatedAt());
+
+		/*
 		if (hbaseConfModel.isExecute()) {
 			// HBaseに登録する
 			try {
@@ -146,12 +139,12 @@ class MyStatusAdapter extends StatusAdapter {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-
+		}*/
+/*
 		if (mediaConfModel.isExecute()) {
 			registMediaUrl(status);
 		}
-		
+		*/
 		writTwitterStreamToCSV(status);
 		
 	}
@@ -206,7 +199,7 @@ class MyStatusAdapter extends StatusAdapter {
 			}
 		}
 	}
-
+/*
 	public void registHbase(Status status) throws IOException {
 		// TODO テーブルを作成するロジックをかく
 		HTable table = new HTable(hbaseConf, "twitter_01");
@@ -224,5 +217,5 @@ class MyStatusAdapter extends StatusAdapter {
 		p.add(family, Bytes.toBytes("FavoriteCount"),
 				Bytes.toBytes(status.getFavoriteCount()));
 		table.put(p);
-	}
+	}*/
 }
