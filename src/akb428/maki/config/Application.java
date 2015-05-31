@@ -15,7 +15,7 @@ public class Application {
 
 	public static String configFilename = "./config/application.properties";
 
-	public Application(String configFilename) throws UnsupportedEncodingException, IOException, ClassNotFoundException, SQLException {
+	public static void load(String configFilename) throws UnsupportedEncodingException, IOException, ClassNotFoundException, SQLException {
 
 		Application.configFilename = configFilename;
 		InputStream inStream = new FileInputStream(Application.configFilename);

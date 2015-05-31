@@ -46,6 +46,7 @@ public class SearchMain {
 		HbaseConfModel hbaseConfModel;
 		MediaConfModel mediaConfModel;
 
+
 		// 追記モード
 		FileOutputStream csv = new FileOutputStream("logs/" +  Calender.yyyymmdd_hhmmss() +".csv"); // CSVデータファイル
 	    BufferedWriter bufferedWriter 
@@ -66,7 +67,7 @@ public class SearchMain {
 		} else {
 			try {
 				twitterModel = TwitterConfParser.readConf(args[1]);
-				application = new Application(args[0]);
+				Application.load(args[0]);
 				
 			} catch (IOException e) {
 				// TODO 自動生成された catch ブロック
