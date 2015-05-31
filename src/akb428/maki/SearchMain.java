@@ -99,6 +99,8 @@ public class SearchMain {
 		ArrayList<String> track = new ArrayList<String>();
 		track.addAll(Arrays.asList(Application.searchKeyword.split(",")));
 
+		System.out.println((Application.searchKeyword.split(",")).length);
+		
 		String[] trackArray = track.toArray(new String[track.size()]);
 
 		// 400のキーワードが指定可能、５０００のフォローが指定可能、２５のロケーションが指定可能
@@ -128,14 +130,15 @@ class MyStatusAdapter extends StatusAdapter {
 	}
 
 	public void onStatus(Status status) {
+		/*
 		System.out.println("@" + status.getUser().getScreenName());
 		System.out.println(status.getId());
 		System.out.println(status.getText());
 		System.out.println(status.getSource());
 		System.out.println(status.getRetweetCount());
 		System.out.println(status.getFavoriteCount());
-		System.out.println(status.getCreatedAt());
-
+		System.out.println(status.getCreatedAt());*/
+		System.out.println(status.getId());
 		if (hbaseConfModel.isExecute()) {
 			// HBaseに登録する
 			try {
