@@ -2,8 +2,10 @@ package akb428.maki;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,12 +45,11 @@ public class SearchMain {
 		TwitterModel twitterModel = null;
 		HbaseConfModel hbaseConfModel;
 		MediaConfModel mediaConfModel;
-		Application application = null;
 
 		// 追記モード
-		File csv = new File("logs/" +  Calender.yyyymmdd_hhmmss() +".csv"); // CSVデータファイル
+		FileOutputStream csv = new FileOutputStream("logs/" +  Calender.yyyymmdd_hhmmss() +".csv"); // CSVデータファイル
 	    BufferedWriter bufferedWriter 
-	        = new BufferedWriter(new FileWriter(csv, false)); 
+	        = new BufferedWriter(new OutputStreamWriter(csv, "UTF-8")); 
 		
 		// TODO 設定ファイルでMariaDBなどに切り替える
 		// Class.forName("org.sqlite.JDBC");
