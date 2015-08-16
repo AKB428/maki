@@ -23,14 +23,7 @@ Twitterの開発者アカウントを取得し
 
 ##起動方法
 
-デフォルト
-
-	java -jar maki.jar "ぬこ,猫"
-
-Twitter設定ファイルを指定する
-
-	java -jar maki.jar "ラブライブ,スクフェス,lovelive" "private/twitter_conf.json"
-
+``java -jar maki.jar private/application.properties private/twitter_conf.json``
 
 ##コンパイル方法
 
