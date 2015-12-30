@@ -97,8 +97,13 @@ public class SearchMain {
 		
 		String[] trackArray = track.toArray(new String[track.size()]);
 
-		// 400のキーワードが指定可能、５０００のフォローが指定可能、２５のロケーションが指定可能
-		twitterStream.filter(new FilterQuery(0, null, trackArray));
+
+		if(Application.locations2DArray != null) {
+			twitterStream.filter(new FilterQuery(0, null, trackArray, Application.locations2DArray));
+		} else {
+			// 400のキーワードが指定可能、５０００のフォローが指定可能、２５のロケーションが指定可能
+			twitterStream.filter(new FilterQuery(0, null, trackArray));
+		}
 
 		if (mediaConfModel.isExecute()) {
 			MediaDownloderThread mediaDownloderThread = new MediaDownloderThread();
@@ -125,6 +130,9 @@ class MyStatusAdapter extends StatusAdapter {
 
 		//System.out.println("@" + status.getUser().getScreenName() );
 
+		if (status.get!= null) {
+
+		}
 		if (status.getGeoLocation() != null) {
 			System.out.print(String.valueOf(status.getGeoLocation().getLatitude()));
 			System.out.print(" ");
@@ -133,7 +141,7 @@ class MyStatusAdapter extends StatusAdapter {
 		System.out.println("  @" + status.getUser().getScreenName());
 
 		//System.out.println(status.getId());
-		//System.out.println(status.getText());
+		System.out.println(status.getText());
 		//System.out.println(status.getSource());
 		//System.out.println(status.getRetweetCount());
 		//System.out.println(status.getFavoriteCount());
