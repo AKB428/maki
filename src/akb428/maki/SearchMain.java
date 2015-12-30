@@ -122,14 +122,22 @@ class MyStatusAdapter extends StatusAdapter {
 	}
 
 	public void onStatus(Status status) {
-	
-		System.out.println("@" + status.getUser().getScreenName());
-		System.out.println(status.getId());
-		System.out.println(status.getText());
-		System.out.println(status.getSource());
-		System.out.println(status.getRetweetCount());
-		System.out.println(status.getFavoriteCount());
-		System.out.println(status.getCreatedAt());
+
+		//System.out.println("@" + status.getUser().getScreenName() );
+
+		if (status.getGeoLocation() != null) {
+			System.out.print(String.valueOf(status.getGeoLocation().getLatitude()));
+			System.out.print(" ");
+			System.out.print(String.valueOf(status.getGeoLocation().getLongitude()));
+		}
+		System.out.println("  @" + status.getUser().getScreenName());
+
+		//System.out.println(status.getId());
+		//System.out.println(status.getText());
+		//System.out.println(status.getSource());
+		//System.out.println(status.getRetweetCount());
+		//System.out.println(status.getFavoriteCount());
+		//System.out.println(status.getCreatedAt());
 
 		/*
 		if (hbaseConfModel.isExecute()) {
@@ -159,8 +167,13 @@ class MyStatusAdapter extends StatusAdapter {
 						+ ","  + status.getRetweetCount()
 						+ ","  + status.getFavoriteCount()
 						+ ","  + status.getCreatedAt()
-						+ "," 
 						);
+
+			  if (status.getGeoLocation() != null) {
+				  bufferedWriter.write(String.valueOf(status.getGeoLocation().getLatitude()) // 緯度
+						  + "," + String.valueOf(status.getGeoLocation().getLongitude()));//経度
+			  }
+
 	    	  /*
 			bufferedWriter.write("\"" +status.getId() 
 					+ "\",\"" + StringEscapeUtils.escapeCsv(status.getUser().getScreenName())
