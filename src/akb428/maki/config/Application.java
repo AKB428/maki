@@ -33,7 +33,7 @@ public class Application {
 		List <String>locationList = Arrays.asList(Application.locations.split(","));
 
 
-		if (locationList.size() > 2) {
+		if (locationList.size() < 2) {
 			return;
 		}
 
