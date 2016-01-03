@@ -130,14 +130,12 @@ class MyStatusAdapter extends StatusAdapter {
 
 		//System.out.println("@" + status.getUser().getScreenName() );
 
-		if (status.get!= null) {
-
-		}
+		/*
 		if (status.getGeoLocation() != null) {
 			System.out.print(String.valueOf(status.getGeoLocation().getLatitude()));
 			System.out.print(" ");
 			System.out.print(String.valueOf(status.getGeoLocation().getLongitude()));
-		}
+		}*/
 		System.out.println("  @" + status.getUser().getScreenName());
 
 		//System.out.println(status.getId());
