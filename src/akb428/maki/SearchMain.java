@@ -115,17 +115,14 @@ class MyStatusAdapter extends StatusAdapter {
     public MyStatusAdapter(ApplicationConfParser applicationConfParser) throws FileNotFoundException, UnsupportedEncodingException{
         //hbaseConfModel = applicationConfParser.getHbaseConfModel();
         mediaConfModel = applicationConfParser.getMediaConfModel();
-        bufferedWriter = newBuffer();
+        newBuffer();
     }
 
-    public BufferedWriter newBuffer() throws FileNotFoundException, UnsupportedEncodingException{
-        BufferedWriter bufferedWriter = null;
+    public void newBuffer() throws FileNotFoundException, UnsupportedEncodingException{
         // 追記モード
         csv = new FileOutputStream("logs/" + Calender.yyyymmdd_hh() + ".csv"); // CSVデータファイル
         bufferedWriter
                 = new BufferedWriter(new OutputStreamWriter(csv, "UTF-8"));
-
-        return bufferedWriter;
     }
 
 
@@ -166,8 +163,9 @@ class MyStatusAdapter extends StatusAdapter {
         if (3600000 <  System.currentTimeMillis() - baseTime ){
             baseTime =  System.currentTimeMillis();
             try {
-                csv.close();
                 bufferedWriter.close();
+                csv.close();
+
                 newBuffer();
             }
             catch (Exception e){
