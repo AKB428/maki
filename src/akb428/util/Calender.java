@@ -21,4 +21,10 @@ public class Calender {
         SimpleDateFormat D = new SimpleDateFormat("yyyyMMdd_HHmmss");
         return D.format(new Date());
 	}
+
+
+    public static String yyyymmdd_hh() {
+        SimpleDateFormat D = new SimpleDateFormat("yyyyMMdd_HH");
+        return D.format(new Date());
+    }
 }

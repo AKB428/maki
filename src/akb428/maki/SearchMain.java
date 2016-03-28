@@ -1,11 +1,6 @@
 package akb428.maki;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,47 +29,41 @@ import akb428.util.Calender;
 
 public class SearchMain {
 
-	public static void main(String[] args) throws ClassNotFoundException,
-			JsonParseException, JsonMappingException, IOException, SQLException {
+    public static void main(String[] args) throws ClassNotFoundException,
+            JsonParseException, JsonMappingException, IOException, SQLException {
 
-		TwitterModel twitterModel = null;
-		HbaseConfModel hbaseConfModel;
-		MediaConfModel mediaConfModel;
+        TwitterModel twitterModel = null;
+        HbaseConfModel hbaseConfModel;
+        MediaConfModel mediaConfModel;
 
+        // TODO 設定ファイルでMariaDBなどに切り替える
+        // Class.forName("org.sqlite.JDBC");
+        Class.forName("org.h2.Driver");
 
-		// 追記モード
-		FileOutputStream csv = new FileOutputStream("logs/" +  Calender.yyyymmdd_hhmmss() +".csv"); // CSVデータファイル
-	    BufferedWriter bufferedWriter 
-	        = new BufferedWriter(new OutputStreamWriter(csv, "UTF-8")); 
-		
-		// TODO 設定ファイルでMariaDBなどに切り替える
-		// Class.forName("org.sqlite.JDBC");
-		Class.forName("org.h2.Driver");
+        if (args.length != 2) {
+            try {
+                twitterModel = TwitterConfParser
+                        .readConf("conf/twitter_conf.json");
+            } catch (IOException e) {
+                // TODO 自動生成された catch ブロック
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                twitterModel = TwitterConfParser.readConf(args[1]);
+                Application.load(args[0]);
 
-		if (args.length != 2) {
-			try {
-				twitterModel = TwitterConfParser
-						.readConf("conf/twitter_conf.json");
-			} catch (IOException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
-		} else {
-			try {
-				twitterModel = TwitterConfParser.readConf(args[1]);
-				Application.load(args[0]);
-				
-			} catch (IOException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
-		}
+            } catch (IOException e) {
+                // TODO 自動生成された catch ブロック
+                e.printStackTrace();
+            }
+        }
 
-		//Configuration conf = HBaseConfiguration.create();
-		ApplicationConfParser applicationConfParser = new ApplicationConfParser(
-				"./conf/application.json");
-		hbaseConfModel = applicationConfParser.getHbaseConfModel();
-		mediaConfModel = applicationConfParser.getMediaConfModel();
+        //Configuration conf = HBaseConfiguration.create();
+        ApplicationConfParser applicationConfParser = new ApplicationConfParser(
+                "./conf/application.json");
+        hbaseConfModel = applicationConfParser.getHbaseConfModel();
+        mediaConfModel = applicationConfParser.getMediaConfModel();
 /*
 		if (hbaseConfModel.isExecute()) {
 			List<String> resources = hbaseConfModel.getResource();
@@ -83,52 +72,66 @@ public class SearchMain {
 			}
 		}*/
 
-		TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
-		twitterStream.setOAuthConsumer(twitterModel.getConsumerKey(),
-				twitterModel.getConsumerSecret());
-		twitterStream.setOAuthAccessToken(new AccessToken(twitterModel
-				.getAccessToken(), twitterModel.getAccessToken_secret()));
+        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream.setOAuthConsumer(twitterModel.getConsumerKey(),
+                twitterModel.getConsumerSecret());
+        twitterStream.setOAuthAccessToken(new AccessToken(twitterModel
+                .getAccessToken(), twitterModel.getAccessToken_secret()));
 
-		twitterStream.addListener(new MyStatusAdapter(applicationConfParser, bufferedWriter));
-		ArrayList<String> track = new ArrayList<String>();
-		track.addAll(Arrays.asList(Application.searchKeyword.split(",")));
+        twitterStream.addListener(new MyStatusAdapter(applicationConfParser));
+        ArrayList<String> track = new ArrayList<String>();
+        track.addAll(Arrays.asList(Application.searchKeyword.split(",")));
 
-		System.out.println((Application.searchKeyword.split(",")).length);
-		
-		String[] trackArray = track.toArray(new String[track.size()]);
+        System.out.println((Application.searchKeyword.split(",")).length);
+
+        String[] trackArray = track.toArray(new String[track.size()]);
 
 
-		if(Application.locations2DArray != null) {
-			twitterStream.filter(new FilterQuery(0, null, trackArray, Application.locations2DArray));
-		} else {
-			// 400のキーワードが指定可能、５０００のフォローが指定可能、２５のロケーションが指定可能
-			twitterStream.filter(new FilterQuery(0, null, trackArray));
-		}
+        if(Application.locations2DArray != null) {
+            twitterStream.filter(new FilterQuery(0, null, trackArray, Application.locations2DArray));
+        } else {
+            // 400のキーワードが指定可能、５０００のフォローが指定可能、２５のロケーションが指定可能
+            twitterStream.filter(new FilterQuery(0, null, trackArray));
+        }
 
-		if (mediaConfModel.isExecute()) {
-			MediaDownloderThread mediaDownloderThread = new MediaDownloderThread();
-			mediaDownloderThread.start();
-		}
-	}
+        if (mediaConfModel.isExecute()) {
+            MediaDownloderThread mediaDownloderThread = new MediaDownloderThread();
+            mediaDownloderThread.start();
+        }
+    }
 
 }
 
 class MyStatusAdapter extends StatusAdapter {
 
-	HbaseConfModel hbaseConfModel;
-	MediaConfModel mediaConfModel;
-	//Configuration hbaseConf;
-	BufferedWriter bufferedWriter;
+    HbaseConfModel hbaseConfModel;
+    MediaConfModel mediaConfModel;
+    //Configuration hbaseConf;
+    BufferedWriter bufferedWriter;
+    FileOutputStream csv;
 
-	public MyStatusAdapter(ApplicationConfParser applicationConfParser, BufferedWriter bufferedWriter) {
-		//hbaseConfModel = applicationConfParser.getHbaseConfModel();
-		mediaConfModel = applicationConfParser.getMediaConfModel();
-		this.bufferedWriter = bufferedWriter;
-	}
+    long baseTime = System.currentTimeMillis(); // unixtime * 1000
 
-	public void onStatus(Status status) {
+    public MyStatusAdapter(ApplicationConfParser applicationConfParser) throws FileNotFoundException, UnsupportedEncodingException{
+        //hbaseConfModel = applicationConfParser.getHbaseConfModel();
+        mediaConfModel = applicationConfParser.getMediaConfModel();
+        bufferedWriter = newBuffer();
+    }
 
-		//System.out.println("@" + status.getUser().getScreenName() );
+    public BufferedWriter newBuffer() throws FileNotFoundException, UnsupportedEncodingException{
+        BufferedWriter bufferedWriter = null;
+        // 追記モード
+        csv = new FileOutputStream("logs/" + Calender.yyyymmdd_hh() + ".csv"); // CSVデータファイル
+        bufferedWriter
+                = new BufferedWriter(new OutputStreamWriter(csv, "UTF-8"));
+
+        return bufferedWriter;
+    }
+
+
+    public void onStatus(Status status) {
+
+        //System.out.println("@" + status.getUser().getScreenName() );
 
 		/*
 		if (status.getGeoLocation() != null) {
@@ -136,14 +139,14 @@ class MyStatusAdapter extends StatusAdapter {
 			System.out.print(" ");
 			System.out.print(String.valueOf(status.getGeoLocation().getLongitude()));
 		}*/
-		System.out.println("  @" + status.getUser().getScreenName());
+        System.out.println("  @" + status.getUser().getScreenName());
 
-		//System.out.println(status.getId());
-		System.out.println(status.getText());
-		//System.out.println(status.getSource());
-		//System.out.println(status.getRetweetCount());
-		//System.out.println(status.getFavoriteCount());
-		//System.out.println(status.getCreatedAt());
+        //System.out.println(status.getId());
+        System.out.println(status.getText());
+        //System.out.println(status.getSource());
+        //System.out.println(status.getRetweetCount());
+        //System.out.println(status.getFavoriteCount());
+        //System.out.println(status.getCreatedAt());
 
 		/*
 		if (hbaseConfModel.isExecute()) {
@@ -159,26 +162,39 @@ class MyStatusAdapter extends StatusAdapter {
 			registMediaUrl(status);
 		}
 		*/
-		writTwitterStreamToCSV(status);
-		
-	}
-	
-	
-	public void writTwitterStreamToCSV(Status status) {
-	      try {
-				bufferedWriter.write(status.getId() 
-						+ "," + StringEscapeUtils.escapeCsv(status.getUser().getScreenName())
-						+ ","  + StringEscapeUtils.escapeCsv(status.getText())
-						+ ","  + StringEscapeUtils.escapeCsv(status.getSource())
-						+ ","  + status.getRetweetCount()
-						+ ","  + status.getFavoriteCount()
-						+ ","  + status.getCreatedAt()
-						);
 
-			  if (status.getGeoLocation() != null) {
-				  bufferedWriter.write(String.valueOf(status.getGeoLocation().getLatitude()) // 緯度
-						  + "," + String.valueOf(status.getGeoLocation().getLongitude()));//経度
-			  }
+        if (3600000 <  System.currentTimeMillis() - baseTime ){
+            baseTime =  System.currentTimeMillis();
+            try {
+                csv.close();
+                bufferedWriter.close();
+                newBuffer();
+            }
+            catch (Exception e){
+                System.out.println(e.toString());
+            }
+        }
+
+        writTwitterStreamToCSV(status);
+
+    }
+
+
+    public void writTwitterStreamToCSV(Status status) {
+        try {
+            bufferedWriter.write(status.getId()
+                    + "," + StringEscapeUtils.escapeCsv(status.getUser().getScreenName())
+                    + ","  + StringEscapeUtils.escapeCsv(status.getText())
+                    + ","  + StringEscapeUtils.escapeCsv(status.getSource())
+                    + ","  + status.getRetweetCount()
+                    + ","  + status.getFavoriteCount()
+                    + ","  + status.getCreatedAt()
+            );
+
+            if (status.getGeoLocation() != null) {
+                bufferedWriter.write(String.valueOf(status.getGeoLocation().getLatitude()) // 緯度
+                        + "," + String.valueOf(status.getGeoLocation().getLongitude()));//経度
+            }
 
 	    	  /*
 			bufferedWriter.write("\"" +status.getId() 
@@ -190,34 +206,34 @@ class MyStatusAdapter extends StatusAdapter {
 					+ "\",\"" + status.getCreatedAt()
 					+ "\""
 					);*/
-		    bufferedWriter.newLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            bufferedWriter.newLine();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-	}
+    }
 
-	public void registMediaUrl(Status status) {
-		// TODO 設定ファイルでMariaDBなどに切り替える
-		IMediaUrlDao dao = new MediaUrlDao();
+    public void registMediaUrl(Status status) {
+        // TODO 設定ファイルでMariaDBなどに切り替える
+        IMediaUrlDao dao = new MediaUrlDao();
 
-		MediaEntity[] arrMedia = status.getMediaEntities();
+        MediaEntity[] arrMedia = status.getMediaEntities();
 
-		if (arrMedia.length > 0) {
-			System.out.println("メディアURLが見つかりました");
-		}
-		for (MediaEntity media : arrMedia) {
-			// http://kikutaro777.hatenablog.com/entry/2014/01/26/110350
-			System.out.println(media.getMediaURL());
+        if (arrMedia.length > 0) {
+            System.out.println("メディアURLが見つかりました");
+        }
+        for (MediaEntity media : arrMedia) {
+            // http://kikutaro777.hatenablog.com/entry/2014/01/26/110350
+            System.out.println(media.getMediaURL());
 
-			if (!dao.isExistUrl(media.getMediaURL())) {
-				// TODO keywordを保存したいがここでは取得できないため一時的にtextをそのまま保存
-				dao.registUrl(media.getMediaURL(), status.getText(), status
-						.getUser().getScreenName());
-			}
-		}
-	}
+            if (!dao.isExistUrl(media.getMediaURL())) {
+                // TODO keywordを保存したいがここでは取得できないため一時的にtextをそのまま保存
+                dao.registUrl(media.getMediaURL(), status.getText(), status
+                        .getUser().getScreenName());
+            }
+        }
+    }
 /*
 	public void registHbase(Status status) throws IOException {
 		// TODO テーブルを作成するロジックをかく
