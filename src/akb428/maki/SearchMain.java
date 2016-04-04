@@ -2,10 +2,7 @@ package akb428.maki;
 
 import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.jackson.JsonParseException;
@@ -112,6 +109,11 @@ class MyStatusAdapter extends StatusAdapter {
 
     long baseTime = System.currentTimeMillis(); // unixtime * 1000
 
+    Calendar cal = Calendar.getInstance();
+    int minute = cal.get(Calendar.MINUTE);
+    int second = cal.get(Calendar.SECOND);
+    int rotation = 3600000 - (minute * 60 * 1000) - (second * 1000);
+
     public MyStatusAdapter(ApplicationConfParser applicationConfParser) throws FileNotFoundException, UnsupportedEncodingException{
         //hbaseConfModel = applicationConfParser.getHbaseConfModel();
         mediaConfModel = applicationConfParser.getMediaConfModel();
@@ -160,7 +162,8 @@ class MyStatusAdapter extends StatusAdapter {
 		}
 		*/
 
-        if (3600000 <  System.currentTimeMillis() - baseTime ){
+        if (rotation <  System.currentTimeMillis() - baseTime ){
+            rotation = 3600000;
             baseTime =  System.currentTimeMillis();
             try {
                 bufferedWriter.close();
@@ -190,20 +193,25 @@ class MyStatusAdapter extends StatusAdapter {
             );
 
             if (status.getGeoLocation() != null) {
-                bufferedWriter.write(String.valueOf(status.getGeoLocation().getLatitude()) // 緯度
+                bufferedWriter.write("," + String.valueOf(status.getGeoLocation().getLatitude()) // 緯度
                         + "," + String.valueOf(status.getGeoLocation().getLongitude()));//経度
+            } else {
+                bufferedWriter.write(",,");
             }
 
-	    	  /*
-			bufferedWriter.write("\"" +status.getId() 
-					+ "\",\"" + StringEscapeUtils.escapeCsv(status.getUser().getScreenName())
-					+ "\",\"" + StringEscapeUtils.escapeCsv(status.getText())
-					+ "\",\"" + StringEscapeUtils.escapeCsv(status.getSource())
-					+ "\",\"" + status.getRetweetCount()
-					+ "\",\"" + status.getFavoriteCount()
-					+ "\",\"" + status.getCreatedAt()
-					+ "\""
-					);*/
+            MediaEntity[] arrMedia = status.getMediaEntities();
+
+            for (MediaEntity media : arrMedia) {
+                bufferedWriter.write("," + media.getMediaURL());
+            }
+
+            // mediaのMAXは4
+            int blanknum = 4 - arrMedia.length;
+
+            for (int i=1 ; i <= blanknum ; i++) {
+                bufferedWriter.write(",");
+            }
+
             bufferedWriter.newLine();
         } catch (IOException e) {
             // TODO Auto-generated catch block
