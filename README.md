@@ -36,5 +36,11 @@ Eclipseでプロジェクト指定するかantでコンパイルしてくださ�
 
 Java8+
 
+## Google BigQueryでログファイルを解析する時のDDL
+
+```
+id: STRING ,name: STRING,tweet_text: STRING,source: STRING,retweet_count: INTEGER,favorite_count: INTEGER,created_at: STRING,latitude: STRING,longitude: STRING,media_url1: STRING,media_url2: STRING,media_url3: STRING,media_url4: STRING,unixtime: STRING
+```
+
 
 
