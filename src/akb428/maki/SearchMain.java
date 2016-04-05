@@ -212,6 +212,8 @@ class MyStatusAdapter extends StatusAdapter {
                 bufferedWriter.write(",");
             }
 
+            bufferedWriter.write("," + String.valueOf(status.getCreatedAt().getTime() / 1000L));
+
             bufferedWriter.newLine();
         } catch (IOException e) {
             // TODO Auto-generated catch block
